@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>AI Interview Intelligence Platform</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+<h1 class="intro-text">
+AI Interview Intelligence
+</h1>
+
+</div>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+<div class="logo">AI Interview Intelligence</div>
+
+<div class="nav-buttons">
+<button class="login" onclick="openLogin()">Login</button>
+<button class="signup" onclick="openSignup()">Sign Up</button>
+</div>
+</div>
+
+<!-- LOGIN MODAL -->
+
+<div id="loginModal" class="modal">
+
+<div class="modal-content">
+
+<span class="close" onclick="closeLogin()">×</span>
+
+<h2>Login</h2>
+
+<div id="phoneSection">
+
+<label>User Name</label>
+<input type="text" id="loginName" placeholder="Enter Name">
+
+<label>Mobile Number</label>
+<input type="text" id="phone" placeholder="+91 12345 67890">
+
+<button class="login-btn" onclick="sendOTP()">Send OTP</button>
+
+<p class="signup-link">Don't have an account? <span onclick="switchToSignup()">Sign Up</span></p>
+
+
+</div>
+
+<div id="otpSection" style="display:none;">
+
+<label>Enter OTP</label>
+<input type="text" id="otp" placeholder="Enter OTP">
+
+<button class="login-btn" onclick="verifyOTP()">Verify OTP</button>
+
+</div>
+
+<p class="terms">By logging in you agree to our Terms and Privacy Policy</p>
+
+</div>
+
+</div>
+
+
+<!-- SIGNUP MODAL -->
+
+<div id="signupModal" class="modal">
+
+<div class="modal-content">
+
+<span class="close" onclick="closeSignup()">×</span>
+
+<h2>Sign Up</h2>
+
+<label>User Name</label>
+<input type="text" id="signupName" placeholder="Enter Name">
+
+<label>Mobile Number</label>
+<input type="text" id="signupPhone" placeholder="+91 12345 67890">
+
+<label>Role</label>
+<select>
+<option>Select Role</option>
+<option>Candidate</option>
+<option>Recruiter</option>
+</select>
+
+<label>Experience</label>
+<select>
+<option>Select Experience</option>
+<option>Fresher</option>
+<option>1-3 Years</option>
+<option>3+ Years</option>
+</select>
+
+<button class="signup-btn" onclick="signupUser()">Sign Up</button>
+<p id="signupMessage" style="color:green;margin-top:10px;"></p>
+
+<p class="login-link">
+Already have an account?
+<span onclick="switchToLogin()">Login</span>
+</p>
+
+</div>
+
+</div>
+
+<!-- HERO -->
+
+<div class="hero" id="hero">
+
+<h1>Smart Interview Preparation</h1>
+
+<p>
+AI-powered resume analysis, interview question generation,
+and communication feedback to help you land your dream job.
+</p>
+
+<div class="hero-buttons">
+
+<button class="start-btn" onclick="openLogin()">Get Started Free</button>
+
+</div>
+
+</div>
+
+<!-- STATS
+
+<div class="stats">
+
+<div class="stat">
+<h2>10,000+</h2>
+<p>Resumes Analyzed</p>
+</div>
+
+<div class="stat">
+<h2>95%</h2>
+<p>Skill Detection Accuracy</p>
+</div>
+
+<div class="stat">
+<h2>24/7</h2>
+<p>AI Feedback</p>
+</div>
+
+<div class="stat">
+<h2>100+</h2>
+<p>Interview Topics</p>
+</div>
+
+</div> -->
+
+<!-- FEATURES -->
+
+<div class="features">
+<div class="compre">
+    <h2 style="font-size: 50px; margin-top: -10px;">Comprehensive Interview Preparation</h2>
+</div>
+
+<div class="feature-grid">
+
+<div class="feature-card">
+<h3>AI Resume Analysis</h3>
+<p>Upload resume and compare with job description.</p>
+</div>
+
+<div class="feature-card">
+<h3>Skill Gap Detection</h3>
+<p>Find missing skills required for the job role.</p>
+</div>
+
+<div class="feature-card">
+<h3>Interview Questions</h3>
+<p>Generate technical, behavioral and scenario questions.</p>
+</div>
+
+<div class="feature-card">
+<h3>Performance Insights</h3>
+<p>Understand strengths and improvement areas.</p>
+</div>
+
+<div class="feature-card">
+<h3>Career Recommendations</h3>
+<p>Get personalized learning suggestions.</p>
+</div>
+
+<div class="feature-card">
+<h3>Practice Interviews</h3>
+<p>Prepare with AI-driven interview simulations.</p>
+</div>
+
+<div class="feature-card">
+<h3>Speech Speed Analysis</h3>
+<p>Measure speaking speed and clarity during interview responses.</p>
+<ul style="margin-top:10px; padding-left:18px;">
+<li>Words Per Minute (WPM)</li>
+<li>Speech Pace Detection</li>
+</ul>
+</div>
+
+<div class="feature-card">
+<h3>Fluency & Tone Analysis</h3>
+<p>Evaluate speaking quality and vocal delivery.</p>
+<ul style="margin-top:10px; padding-left:18px;">
+<li>Fluency Score</li>
+<li>Tone & Intonation</li>
+<li>Confidence Level</li>
+</ul>
+</div>
+
+<div class="feature-card">
+<h3>Communication Quality</h3>
+<p>Identify speaking habits and overall communication effectiveness.</p>
+<ul style="margin-top:10px; padding-left:18px;">
+<li>Filler Words Detection</li>
+<li>Overall Communication Score</li>
+</ul>
+</div>
+
+</div>
+
+</div>
+
+<!-- CTA -->
+
+<div class="cta">
+
+<h1>Ready to Crack Your Next Interview?</h1>
+
+<p>Start analyzing your resume and prepare smarter with AI.</p>
+
+<div class="cta-button">
+<button onclick="openLogin()">Start Free Trial</button>
+</div>
+
+</div>
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+<div class="footer-container">
+
+<div class="footer-section">
+<h3>🛡 AI Interview Intelligence</h3>
+<p>Smart interview preparation powered by AI to help candidates land their dream jobs.</p>
+</div>
+
+<div class="footer-section">
+<h4>Features</h4>
+<ul>
+<li>Resume Analysis</li>
+<li>Skill Gap Detection</li>
+<li>AI Interview Questions</li>
+<li>Communication Analysis</li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Support</h4>
+<ul>
+<li>Help Center</li>
+<li>Training Videos</li>
+<li>Contact Us</li>
+<li>FAQ</li>
+</ul>
+</div>
+
+<div class="footer-section">
+<h4>Contact</h4>
+<p>📞 +91 XXXXX XXXXX</p>
+<p>📧 support@aiinterview.com</p>
+<p>📍 India</p>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+<p>© 2026 AI Interview Intelligence. All rights reserved.</p>
+</div>
+
+</footer>
+<script src="script.js"></script>
+
+</body>
+</html>

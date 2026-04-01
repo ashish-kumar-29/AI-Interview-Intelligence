@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Resume Analysis Result</title>
+<script src="user.js"></script>
+
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:#f1f5f9;
+/* min-height:30vh; */
+
+}
+
+.generate-btn{
+padding:12px 20px;
+background:#6366f1;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin-bottom:10px;
+transition:transform 0.2s ease;
+}
+
+.generate-btn:hover{
+transform:scale(1.08);
+}
+
+.qbtn{
+padding:8px 14px;
+background:#22c55e;
+color:white;
+border:none;
+border-radius:6px;
+margin:5px;
+cursor:pointer;
+}
+
+.container{
+max-width:1000px;
+margin:30px auto 40px auto;
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(10,10,10,2.1);
+}
+
+.cards{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+margin-top:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 6px 15px rgba(0,0,0,0.08);
+}
+
+.tag{
+background:#e0f2fe;
+padding:6px 10px;
+border-radius:15px;
+margin:4px;
+display:inline-block;
+}
+
+.missing{
+background:#fee2e2;
+}
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 40px;
+background:white;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+width:100%;
+}
+
+.logo{
+font-size:30px;
+font-weight:700;
+color:#6366f1;
+}
+
+.nav-buttons{
+    display: flex;
+    height: 45px;
+    gap: 20px;
+}
+
+.user-btn{
+padding:14px 28px;
+font-size:16px;
+background:#6366f1;
+color:white;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:transform 0.2s;
+}
+
+.logout-btn{
+padding:14px 28px;
+font-size:16px;
+background:#22c55e;
+color:white;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:transform 0.2s;
+}
+
+.user-btn:hover,
+.logout-btn:hover{
+transform:scale(1.08);
+}
+
+.progress{
+width:100%;
+height:12px;
+background:#e5e7eb;
+border-radius:10px;
+overflow:hidden;
+margin:10px 0;
+}
+
+.progress-bar{
+height:100%;
+/* background:linear-gradient(90deg,#6366f1,#4f46e5); */
+background:linear-gradient(90deg,#22c55e,#16a34a);
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+<div class="logo">AI Interview Intelligence</div>
+
+<div class="nav-buttons">
+<button id="userBtn" class="user-btn"></button>
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+</div>
+
+<div class="container">
+
+<h2 style="font-size: 35px; margin-top: 8px;">Resume Analysis Result</h2>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+let data = JSON.parse(localStorage.getItem("analysisResults"))
+
+let score = data.score
+let analysis = data.analysis
+let questions = data.questions
+
+let html = `
+
+<div class="cards">
+
+<div class="card">
+
+<h3>🎯 Alignment Score</h3>
+
+<div class="progress">
+<div class="progress-bar" style="width:${score}%"></div>
+</div>
+
+<p><b>${score}% Match</b></p>
+
+</div>
+
+<div class="card">
+
+<h3>💪 Strengths</h3>
+
+${analysis.strengths.map(s=>`<span class="tag">${s}</span>`).join("")}
+
+</div>
+
+<div class="card">
+
+<h3>⚠ Missing Skills</h3>
+
+${analysis.missing_skills.map(s=>`<span class="tag missing">${s}</span>`).join("")}
+
+</div>
+
+<div class="card">
+
+<h3>💡 Recommendations</h3>
+
+<ul>
+${analysis.recommendations.map(r=>`<li>${r}</li>`).join("")}
+</ul>
+
+</div>
+
+</div>
+
+<h3 style="margin-top:40px;">🤖 AI Interview Questions</h3>
+
+<button onclick="openQuestionsPage()" class="generate-btn">
+Generate Questions
+</button>
+
+<div id="questionTypes" style="display:none;margin-top:20px;">
+
+<button onclick="loadQuestions('technical')" class="qbtn">
+Technical Questions
+</button>
+
+<button onclick="loadQuestions('behavioral')" class="qbtn">
+Behavioral Questions
+</button>
+
+<button onclick="loadQuestions('scenario')" class="qbtn">
+Scenario Questions
+</button>
+
+</div>
+
+<div id="questionsOutput" class="card" style="margin-top:20px; display: none"></div>
+
+
+`
+document.getElementById("result").innerHTML = html
+
+// QUESTIONS GENERATE
+
+function showQuestionTypes(){
+document.getElementById("questionTypes").style.display="block"
+}
+
+function loadQuestions(type){
+let data = JSON.parse(localStorage.getItem("analysisResults"))
+console.log("Stored Analysis Results:", data)
+
+if(!data){
+alert("No analysis data found")
+return
+}
+
+let questions = data.questions
+let list = []
+
+if(type === "technical"){
+list = questions.technical_questions
+}
+
+if(type === "behavioral"){
+list = questions.behavioral_questions
+}
+
+if(type === "scenario"){
+list = questions.scenario_questions
+}
+
+let html = "<ul>"
+
+list.forEach(q=>{
+html += `<li>${q}</li>`
+})
+
+html += "</ul>"
+
+document.getElementById("questionsOutput").innerHTML = html
+
+}
+
+function openQuestionsPage(){
+window.location.href = "questions.html"
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Communication Analysis</title>
+<script src="user.js"></script>
+
+
+<style>
+
+ *{
+box-sizing:border-box;
+}  
+
+body{
+margin: 0;
+font-family:Segoe UI;
+background:#f1f5f9;
+}
+
+.container{
+margin:50px auto 40px auto;
+
+background:#059669;
+padding:40px;
+border-radius:15px;
+max-width:1000px;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+text-align:center;
+}
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 40px;
+background:white;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+width:100%;
+}
+
+.logo{
+font-size:30px;
+font-weight:700;
+color:#6366f1;
+}
+
+.nav-buttons{
+    display: flex;
+    height: 45px;
+    gap: 20px;
+}
+
+
+.user-btn{
+padding:14px 28px;
+font-size:16px;
+background:#6366f1;
+color:white;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:transform 0.2s;
+}
+
+.logout-btn{
+padding:14px 28px;
+font-size:16px;
+background:#22c55e;
+color:white;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:transform 0.2s;
+}
+
+.user-btn:hover,
+.logout-btn:hover{
+transform:scale(1.08);
+}
+
+
+h2{
+margin-bottom:20px;
+font-size: 50px;
+color: white;
+}
+
+/* .features{
+text-align:left;
+margin-top:20px;
+}
+
+.features li{
+margin:10px 0;
+font-size:16px;
+} */
+
+.start-btn{
+margin-top:30px;
+padding:16px 40px;
+font-size:20px;
+border:none;
+border-radius:10px;
+background:linear-gradient(135deg,white);
+color:#059669;
+cursor:pointer;
+transition:transform 0.2s ease;
+margin-bottom: 30px;
+}
+
+.start-btn:hover{
+transform:scale(1.10);
+}
+
+.analysis-grid{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:40px;
+margin-top:30px;
+margin-bottom: 40px;
+}
+
+.analysis-card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 6px 15px rgba(0,0,0,0.08);
+transition:transform 0.25s ease, box-shadow 0.25s ease;
+cursor:pointer;
+}
+
+.analysis-card h4{
+margin:10px 0;
+}
+
+.analysis-card p{
+font-size:18px;
+color:#555;
+}
+
+.analysis-card:hover{
+transform:translateY(-25px);
+box-shadow:0 12px 25px rgba(10,10,10,1.15);
+}
+
+.desc{
+    font-size: 25px;
+    margin-top: 70px;
+    margin-bottom: 90px;
+    color: white;
+}
+
+h4{
+    font-size: 22px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="container">
+
+<h2>🎤 AI Communication Analysis</h2>
+
+<p class="desc">
+Our AI-powered communication analysis evaluates how effectively you present your ideas during an interview. 
+It analyzes multiple aspects of your speech such as speaking speed, clarity, confidence, and delivery quality. 
+This helps identify strengths in your communication style and highlights areas where improvement can increase 
+your chances of success in technical interviews.
+</p>
+
+<div class="analysis-grid">
+
+<div class="analysis-card">
+📊 <h4>Words Per Minute</h4>
+<p>Measures your speaking speed to ensure your explanation is clear and neither too fast nor too slow.</p>
+</div>
+
+<div class="analysis-card">
+🗣 <h4>Fluency Score</h4>
+<p>Evaluates how smoothly you speak without unnecessary pauses or interruptions.</p>
+</div>
+
+<div class="analysis-card">
+🎯 <h4>Tone & Intonation</h4>
+<p>Analyzes voice modulation to determine whether your speech sounds engaging and natural.</p>
+</div>
+
+<div class="analysis-card">
+💪 <h4>Confidence Level</h4>
+<p>Detects confidence in your voice delivery while explaining technical concepts.</p>
+</div>
+
+<div class="analysis-card">
+⚠ <h4>Filler Words</h4>
+<p>Identifies filler words such as "um", "uh", and "like" that may reduce clarity.</p>
+</div>
+
+<div class="analysis-card">
+⭐ <h4>Communication Score</h4>
+<p>Combines all metrics to generate an overall evaluation of your interview communication performance.</p>
+</div>
+
+</div>
+
+<button class="start-btn" onclick="startInterview()">
+<b>Start Interview Analysis</b>
+</button>
+
+</div>
+
+<script>
+
+function startInterview(){
+window.location.href="interview.html"
+}
+
+let user = localStorage.getItem("loggedUser")
+
+if(user){
+document.getElementById("userBtn").innerHTML = "👤 " + user
+}
+
+function logout(){
+localStorage.removeItem("loggedUser")
+window.location.href = "index.html"
+}
+
+</script>
+
+</body>
+
+</html>

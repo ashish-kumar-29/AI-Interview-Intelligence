@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+    if(localStorage.getItem("loggedIn") !== "true"){
+        alert("Please login first")
+        window.location.href = "index.html"
+    }
+    </script>
+    <script src="user.js"></script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+<div class="logo">AI Interview Intelligence</div>
+
+<div class="nav-buttons">
+<button id="userBtn" class="user-btn"></button>
+<button onclick="logout()">Logout</button>
+
+</div>
+</div>
+    
+
+<!-- resume box -->
+ 
+<div class="app" id="app">
+
+<div class="container">
+
+<h2 style="font-size: 35px; margin-top: -15px;">AI Resume Analyzer</h2>
+
+<input type="file" id="resume">
+
+<textarea id="jd" rows="15" placeholder="Paste Job Description"></textarea>
+
+<button onclick="analyze()">Analyze Resume</button>
+
+<div id="result"></div>
+
+
+</div>
+
+</div>
+<script src="script.js"></script>
+
+</body>
+</html>

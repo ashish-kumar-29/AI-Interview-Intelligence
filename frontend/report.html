@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Interview Communication Report</title>
+<script src="user.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+}  
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 40px;
+background:white;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+width:100%;
+}
+
+.logo{
+font-size:30px;
+font-weight:700;
+color:#6366f1;
+}
+
+.nav-buttons{
+    display: flex;
+    height: 45px;
+    gap: 20px;
+}
+
+.user-btn{
+padding:14px 28px;
+font-size:16px;
+background:#6366f1;
+color:white;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:transform 0.2s;
+}
+
+.logout-btn{
+padding:14px 28px;
+font-size:16px;
+background:#22c55e;
+color:white;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:transform 0.2s;
+}
+
+.user-btn:hover,
+.logout-btn:hover{
+transform:scale(1.08);
+}
+
+body{
+font-family:Segoe UI;
+background:#f1f5f9;
+margin:0;
+/* padding:40px; */
+}
+
+.container{
+width:1100px;
+max-width:95%;
+margin:50px auto 40px auto;
+/* max-width:1000px;
+margin:auto; */
+background:white;
+padding:40px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,1.1);
+}
+
+h2{
+text-align:center;
+margin: auto;
+margin-bottom:30px;
+font-size: 50px;
+}
+
+.score-box{
+text-align:center;
+font-size:30px;
+font-weight:bold;
+color:#6366f1;
+margin-bottom:30px;
+
+}
+
+.metrics{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+margin-top:30px;
+}
+
+.metric-card{
+background:#f3f4f6;
+/* background: #22c55e;  */
+/* color: black;  */
+margin: 20px;
+padding:1px;
+border-radius:12px;
+text-align:center;
+/* margin-left: 80px; */
+transition:transform 0.2s;
+
+}
+
+.metric-card:hover{
+    transform: scale(1.10);
+}
+
+.metric-card h3{
+font-size:22px;
+margin-bottom:10px;
+}
+
+.metric-card p{
+font-size:19px;
+font-weight:450;
+color:black;
+}
+
+.feedback{
+margin-top:40px;
+padding:25px;
+background:#f3f4f6;
+/* background: #ebedf0; */
+border-radius:10px;
+}
+
+.feedback h3{
+font-size:22px;
+margin-bottom:10px;
+}
+
+.feedback p{
+font-size:19px;
+line-height:1.7;
+}
+
+.download-btn{
+display:block;
+margin:40px auto 0 auto;
+padding:15px 30px;
+font-size:18px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+color:white;
+cursor:pointer;
+transition:transform ease 0.2s;
+margin-top: 52px;
+margin-bottom: 20px;
+
+}
+
+.download-btn:hover{
+transform:scale(1.05);
+}
+
+canvas{
+margin-top:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+<div class="logo">AI Interview Intelligence</div>
+
+<div class="nav-buttons">
+<button id="userBtn" class="user-btn"></button>
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+</div>
+
+<div class="container">
+
+<h2>AI Interview Communication Report</h2>
+
+<div class="score-box" id="overallScore"></div>
+
+<canvas id="radarChart"></canvas>
+
+<div class="metrics">
+
+<div class="metric-card">
+<h3>Fluency</h3>
+<p id="fluency"></p>
+</div>
+
+<div class="metric-card">
+<h3>Confidence</h3>
+<p id="confidence"></p>
+</div>
+
+<div class="metric-card">
+<h3>Speaking Speed</h3>
+<p id="speed"></p>
+</div>
+
+<div class="metric-card">
+<h3>Clarity</h3>
+<p id="clarity"></p>
+</div>
+
+</div>
+
+<div class="feedback">
+
+<h3>AI Feedback</h3>
+
+<p id="feedbackText"></p>
+
+</div>
+
+<button class="download-btn" onclick="downloadPDF()">
+Download Report PDF
+</button>
+
+</div>
+
+<script>
+
+// Load results from previous phase
+let data = JSON.parse(localStorage.getItem("communicationResults")) || []
+
+let scores = data.map(item => item.score)
+// let avg = scores.reduce((a,b)=>a+b,0)/scores.length
+let avg = 0
+
+if(scores.length > 0){
+avg = scores.reduce((a,b)=>a+b,0) / scores.length
+}
+
+let fluency = Math.round(avg * 0.9)
+let confidence = Math.round(avg * 0.85)
+let speed = Math.round(avg * 0.8)
+let clarity = Math.round(avg * 0.88)
+
+document.getElementById("overallScore").innerHTML =
+"Overall Communication Score: " + avg.toFixed(1) + "%"
+
+document.getElementById("fluency").innerText = fluency + "%"
+document.getElementById("confidence").innerText = confidence + "%"
+document.getElementById("speed").innerText = speed + "%"
+document.getElementById("clarity").innerText = clarity + "%"
+
+// Feedback generation
+let feedback = ""
+
+if(avg > 80){
+feedback = "Excellent communication skills. Your explanations were clear and confident."
+}
+else if(avg > 60){
+feedback = "Good communication overall, but reducing filler words and improving clarity will help."
+}
+else{
+feedback = "Communication needs improvement. Practice explaining concepts clearly and reduce pauses."
+}
+
+document.getElementById("feedbackText").innerText = feedback
+
+// Radar Chart
+// new Chart(document.getElementById("radarChart"),{
+
+// type:"radar",
+
+// data:{
+// labels:["Fluency","Confidence","Speed","Clarity"],
+// datasets:[{
+// data:[fluency,confidence,speed,clarity],
+// backgroundColor:"rgba(99,102,241,0.2)",
+// borderColor:"#6366f1"
+// }]
+// },
+// options:{
+// plugins:{
+// legend:{
+// display:false   // removes the box
+// }
+// }
+// }
+
+// })
+new Chart(document.getElementById("radarChart"),{
+
+type:"radar",
+
+data:{
+labels:["Fluency","Confidence","Speed","Clarity"],
+
+datasets:[{
+
+data:[fluency,confidence,speed,clarity],
+
+backgroundColor:"rgba(99,102,241,0.2)",
+
+borderColor:"#6366f1",
+
+borderWidth:2,
+
+pointBackgroundColor:"#6366f1",
+
+pointRadius:6
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+animation:{
+duration:1500
+},
+
+plugins:{
+legend:{
+display:false
+}
+},
+
+scales:{
+r:{
+
+min:0,
+
+max:100,
+
+ticks:{
+stepSize:20,
+backdropColor:"transparent"
+},
+
+grid:{
+color:"#e5e7eb"
+},
+
+angleLines:{
+color:"#d1d5db"
+},
+
+pointLabels:{
+font:{
+size:16,
+weight:"600"
+}
+}
+
+}
+
+}
+
+}
+
+})
+
+// PDF Report
+
+function downloadPDF(){
+
+const { jsPDF } = window.jspdf
+let doc = new jsPDF()
+
+let resumeData = JSON.parse(localStorage.getItem("analysisResults"))
+let interviewData = JSON.parse(localStorage.getItem("communicationResults"))
+
+let candidate = localStorage.getItem("loggedUser") || "Candidate"
+
+let y = 20
+
+
+/* ---------------- HEADER ---------------- */
+
+doc.setFont("helvetica","bold")
+doc.setFontSize(22)
+doc.text("AI Interview Intelligence Report",105,y,null,null,"center")
+
+y+=10
+
+doc.setFont("helvetica","normal")
+doc.setFontSize(14)
+doc.text("Candidate: "+candidate,105,y,null,null,"center")
+
+/* divider line */
+
+doc.setDrawColor(180,180,180)
+doc.line(20,y+5,190,y+5)
+
+y+=20
+
+
+/* ---------------- RESUME ANALYSIS ---------------- */
+
+doc.setFont("helvetica","bold")
+doc.setFontSize(16)
+doc.text("Resume Analysis",20,y)
+
+y+=10
+
+doc.setFont("helvetica","normal")
+doc.setFontSize(12)
+
+let score = resumeData.analysis.alignment_score
+if(score<=1){ score = Math.round(score*100) }
+
+doc.text("Alignment Score: "+score+"%",20,y)
+
+y+=10
+
+doc.setFont("helvetica","bold")
+doc.text("Strengths:",20,y)
+
+y+=8
+
+doc.setFont("helvetica","normal")
+
+resumeData.analysis.strengths.forEach(s=>{
+doc.text("- "+s,25,y)
+y+=7
+})
+
+y+=5
+
+doc.setFont("helvetica","bold")
+doc.text("Missing Skills:",20,y)
+
+y+=8
+
+doc.setFont("helvetica","normal")
+
+resumeData.analysis.missing_skills.forEach(m=>{
+doc.text("- "+m,25,y)
+y+=7
+})
+
+
+/* ---------------- INTERVIEW QUESTIONS ---------------- */
+
+y+=15
+
+doc.setFont("helvetica","bold")
+doc.setFontSize(18)
+doc.text("Interview Question Analysis",105,y,null,null,"center")
+
+y+=15
+
+doc.setFontSize(12)
+
+interviewData.forEach((item,index)=>{
+
+if(y > 250){
+doc.addPage()
+y = 20
+}
+
+doc.setFont("helvetica","bold")
+doc.text("Question "+(index+1)+":",20,y)
+
+
+y+=8
+
+doc.setFont("helvetica","normal")
+doc.text(item.question,25,y,{maxWidth:160})
+
+y+=12
+
+doc.setFont("helvetica","bold")
+doc.text("Answer:",20,y)
+
+y+=8
+
+doc.setFont("helvetica","normal")
+
+let answerLines = doc.splitTextToSize(item.answer || "No answer recorded",160)
+
+/* write wrapped text */
+doc.text(answerLines,25,y)
+
+/* move y according to actual lines */
+y += answerLines.length * 7 + 8
+
+// doc.text(item.answer,25,y,{maxWidth:160})
+
+// y+=12
+
+if(y > 250){
+doc.addPage()
+y = 20
+}
+
+doc.setFont("helvetica","bold")
+doc.text("Words Per Minute: "+item.wpm,25,y)
+
+y+=7
+
+doc.text("Filler Words: "+item.filler,25,y)
+
+y+=7
+
+doc.text("Communication Score: "+item.score,25,y)
+
+y+=12
+
+doc.setDrawColor(220,220,220)
+doc.line(20,y,190,y)
+y += 10
+
+
+})
+
+
+/* ---------------- OVERALL SCORE PAGE ---------------- */
+
+doc.addPage()
+
+let total = interviewData.reduce((sum,q)=>sum+q.score,0)
+let avg = Math.round(total/interviewData.length)
+
+doc.setFont("helvetica","bold")
+doc.setFontSize(20)
+
+doc.text("Overall Communication Score",105,30,null,null,"center")
+
+doc.setFontSize(30)
+doc.text(avg+"%",105,50,null,null,"center")
+
+
+/* score box */
+
+doc.setDrawColor(100,100,100)
+doc.rect(55,60,100,30)
+
+doc.setFontSize(14)
+doc.text("Interview Performance",105,75,null,null,"center")
+
+
+/* progress bar */
+
+doc.setFillColor(99,102,241)
+
+let barWidth = avg*1.2
+
+doc.rect(30,100,barWidth,10,"F")
+
+doc.setDrawColor(200,200,200)
+doc.rect(30,100,150,10)
+
+
+/* feedback */
+
+doc.setFont("helvetica","bold")
+doc.setFontSize(16)
+
+doc.text("AI Feedback",105,130,null,null,"center")
+
+doc.setFont("helvetica","normal")
+
+let feedback=""
+
+if(avg>80){
+feedback="Excellent communication. Your explanations were clear, structured and confident."
+}
+else if(avg>60){
+feedback="Good communication overall. Reducing filler words and improving clarity will strengthen your answers."
+}
+else{
+feedback="Communication needs improvement. Focus on structured explanations and speaking clarity."
+}
+
+doc.text(feedback,20,145,{maxWidth:170})
+
+
+/* page numbers */
+
+addPageNumber(doc)
+
+/* save */
+
+doc.save("AI_Interview_Report.pdf")
+
+}
+
+
+
+/* ---------------- PAGE NUMBER FUNCTION ---------------- */
+
+function addPageNumber(doc){
+
+let pageCount = doc.getNumberOfPages()
+
+for(let i=1;i<=pageCount;i++){
+
+doc.setPage(i)
+
+doc.setFontSize(10)
+
+doc.text("Page "+i+" of "+pageCount,105,290,null,null,"center")
+
+}
+
+}
+
+
+</script>
+
+</body>
+
+</html>

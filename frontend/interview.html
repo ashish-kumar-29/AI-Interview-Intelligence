@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Interview Analysis</title>
+<script src="user.js"></script>
+
+
+<style>
+
+ *{
+box-sizing:border-box;
+}  
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 40px;
+background:white;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+width:100%;
+}
+
+.logo{
+font-size:30px;
+font-weight:700;
+color:#6366f1;
+}
+
+.nav-buttons{
+    display: flex;
+    height: 45px;
+    gap: 20px;
+}
+
+
+.user-btn{
+padding:14px 28px;
+font-size:16px;
+background:#6366f1;
+color:white;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:transform 0.2s;
+}
+
+.logout-btn{
+padding:14px 28px;
+font-size:16px;
+background:#22c55e;
+color:white;
+border:none;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+transition:transform 0.2s;
+}
+
+.user-btn:hover,
+.logout-btn:hover{
+transform:scale(1.08);
+}
+
+body{
+font-family:Segoe UI;
+background:#f1f5f9;
+margin:0;
+}
+
+.container{
+width:1100px;
+max-width:95%;
+margin:50px auto 40px auto;
+background:white;
+padding:100px;
+border-radius:15px;
+/* max-width:1000px; */
+box-shadow:0 15px 35px rgba(0,0,0,1.15);
+text-align:center;
+margin-top: 60px;
+}
+
+#questionTitle{
+    font-size: 50px;
+    margin-top: -30px;
+}
+
+#questionText{
+font-size:18px;
+line-height:1.6;
+margin-top:30px;
+color:#333;
+}
+
+.controls button{
+margin:10px;
+padding:12px 20px;
+font-size:16px;
+border:none;
+border-radius:8px;
+background:#6366f1;
+color:white;
+cursor:pointer;
+}
+
+.controls button:hover{
+transform:scale(1.05);
+}
+
+#recordBtn{
+margin-top:20px;
+padding:14px 30px;
+background:#ef4444;
+color:white;
+border:none;
+border-radius:50px;
+font-size:16px;
+cursor:pointer;
+}
+
+.recording{
+animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.15)}
+100%{transform:scale(1)}
+}
+
+.progress-bar{
+width:100%;
+height:10px;
+background:#e5e7eb;
+border-radius:10px;
+margin:20px 0;
+}
+
+#progressFill{
+height:100%;
+width:0%;
+background:#6366f1;
+border-radius:10px;
+transition:width 0.5s;
+}
+
+.transcript-box{
+background:#f3f4f6;
+padding:28px;
+border-radius:12px;
+margin-top:25px;
+min-height:100px;  
+}
+
+#transcript{
+font-size:18px;
+line-height:1.6;
+color:#111;
+margin-top:10px;
+}
+
+#result{
+margin-top:25px;
+font-size:22px;
+line-height:1.8;
+font-weight:400;
+}
+
+#result p{
+font-size:18px;
+margin:10px 0;
+}
+
+.next-container{
+width:100%;
+display:flex;
+position: relative;
+margin-top:25px;
+}
+
+#nextBtn,#finalSubmit{
+position: absolute;
+right: 0;
+margin-top:30px;
+padding:14px 30px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+color:white;
+font-size:16px;
+cursor:pointer;
+white-space: nowrap;
+transition:transform 0.2s;
+
+}
+
+#nextBtn:hover{
+transform:scale(1.10);
+
+}
+
+
+#transcript::after{
+content:"|";
+animation:blink 1s infinite;
+}
+
+
+@keyframes blink{
+0%{opacity:1}
+50%{opacity:0}
+100%{opacity:1}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+<div class="logo">AI Interview Intelligence</div>
+
+<div class="nav-buttons">
+<button id="userBtn" class="user-btn"></button>
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+</div>
+
+<div class="container">
+
+<h2 id="questionTitle">Interview Question</h2>
+
+<div class="progress-bar">
+<div id="progressFill"></div>
+</div>
+
+<p id="questionText"></p>
+
+<div class="controls">
+
+<button onclick="startRecording()">Start</button>
+
+<button onclick="stopRecording()">Stop</button>
+
+<button onclick="resetRecording()">Reset</button>
+
+<button onclick="submitAnswer()">Submit</button>
+
+</div>
+
+<button id="recordBtn">🎤 Recording</button>
+
+<div class="transcript-box">
+<b style="font-size: 18px;">Live Transcription:</b>
+<p id="transcript"></p>
+</div>
+
+<div id="result"></div>
+
+<div class="next-container">
+<button id="nextBtn" onclick="nextQuestion()" style="display:none;">
+Next Question
+</button>
+
+<button id="finalSubmit" onclick="finalSubmit()" style="display:none;">
+Final Submit
+</button>
+</div>
+
+</div>
+
+<script>
+
+//Load questions from previous phase
+let data = JSON.parse(localStorage.getItem("analysisResults"))
+let questions = data.questions.technical_questions
+
+let currentQuestion = 0
+let results = []
+
+//Speech recognition setup
+const SpeechRecognition =
+window.SpeechRecognition || window.webkitSpeechRecognition
+
+let recognition = new SpeechRecognition()
+recognition.continuous = true
+
+let transcript = ""
+
+//Display question
+function loadQuestion(){
+
+document.getElementById("questionText").innerText =
+questions[currentQuestion]
+
+updateProgress()
+
+}
+
+loadQuestion()
+
+//Progress bar
+function updateProgress(){
+
+let progress = ((currentQuestion+1)/5)*100
+document.getElementById("progressFill").style.width = progress+"%"
+
+}
+
+let startTime = 0
+let endTime = 0
+
+//Recording
+function startRecording(){
+startTime = Date.now()
+recognition.start()
+document.getElementById("recordBtn").classList.add("recording")
+
+}
+
+// recognition.onresult = function(event){
+
+// let text = event.results[event.results.length-1][0].transcript
+
+// transcript += text + " "
+
+// document.getElementById("transcript").innerText = transcript
+
+// }
+
+recognition.onresult = function(event){
+
+let text = event.results[event.results.length-1][0].transcript
+
+let words = text.split(" ")
+
+showWords(words)
+
+}
+
+function showWords(words){
+
+let i = 0
+
+let interval = setInterval(function(){
+
+if(i < words.length){
+
+transcript += words[i] + " "
+
+document.getElementById("transcript").innerText = transcript
+
+i++
+
+}
+else{
+clearInterval(interval)
+}
+
+},120)
+
+}
+
+//stop recording
+function stopRecording(){
+endTime = Date.now()
+recognition.stop()
+document.getElementById("recordBtn").classList.remove("recording")
+}
+
+function resetRecording(){
+
+transcript = ""
+document.getElementById("transcript").innerText=""
+
+}
+
+//Submit Answer
+function submitAnswer(){
+
+// let words = transcript.trim().split(/\s+/).length
+
+// let duration = 90
+
+// let wpm = words/(duration/60)
+
+// let fillerWords = (transcript.match(/um|uh|like/gi)||[]).length
+
+// let score = Math.min(100, Math.round(wpm + (20 - fillerWords)))
+
+let words = transcript.trim().split(/\s+/).length
+
+if(transcript.trim().length === 0){
+alert("Please record your answer first")
+return
+}
+
+let durationSeconds = (endTime - startTime) / 1000
+if(durationSeconds <= 0){
+durationSeconds = 1
+}
+let durationMinutes = durationSeconds / 60
+let wpm = Math.round(words / durationMinutes)
+
+/* filler detection */
+
+let fillerMatches =
+transcript.match(/\b(um|uh|like|you know|actually|so|basically|literally|totally|really|sort of|kind of|I mean|you see|okay|alright|rather|somewhat|obviously)\b/gi) || []
+
+let fillerCount = fillerMatches.length
+
+/* sentence analysis */
+
+let sentences =
+transcript.split(/[.!?]/).filter(s=>s.trim().length>0)
+
+if(sentences.length === 0){
+sentences = [transcript]
+}
+
+let avgSentenceLength = words / sentences.length
+
+/* scores */
+
+let speedScore = Math.min(100,(wpm/150)*100)
+
+let fillerPenalty = Math.max(0,100 - fillerCount*5)
+
+let clarityScore = Math.min(100,avgSentenceLength*5)
+
+let fluencyScore = (speedScore + fillerPenalty)/2
+
+let confidenceScore = Math.min(100,(words/50)*100)
+
+let communicationScore =
+Math.round((fluencyScore + clarityScore + confidenceScore)/3)
+
+// let resultHTML = `
+// <p><b>Words Per Minute:</b> ${Math.round(wpm)}</p>
+// <p><b>Filler Words:</b> ${fillerWords}</p>
+// <p><b>Communication Score:</b> ${score}</p>
+// `
+
+let resultHTML = `
+<p><b>Words Per Minute:</b> ${wpm}</p>
+<p><b>Filler Words:</b> ${fillerCount}</p>
+<p><b>Fluency Score:</b> ${Math.round(fluencyScore)}</p>
+<p><b>Clarity Score:</b> ${Math.round(clarityScore)}</p>
+<p><b>Confidence Score:</b> ${Math.round(confidenceScore)}</p>
+<p><b>Overall Communication Score:</b> ${communicationScore}</p>
+`
+
+document.getElementById("result").innerHTML = resultHTML
+
+results.push({
+question: questions[currentQuestion],
+answer: transcript,
+wpm: Math.round(wpm),
+filler: fillerCount,
+score: communicationScore
+})
+
+let feedback = ""
+
+if(wpm < 90)
+feedback += "Speak slightly faster. "
+
+if(fillerCount > 3)
+feedback += "Reduce filler words like 'um' or 'uh'. "
+
+if(words < 30)
+feedback += "Try to give more detailed answers. "
+
+document.getElementById("result").innerHTML +=
+"<p style='margin-top:18px'><b>AI Feedback:</b> "+feedback+"</p>"
+
+/* show correct button */
+
+if(currentQuestion < 4){
+
+document.getElementById("nextBtn").style.display="block"
+
+}else{
+
+document.getElementById("finalSubmit").style.display="block"
+
+}
+
+}
+
+//Next Question
+function nextQuestion(){
+
+currentQuestion++
+
+transcript=""
+
+document.getElementById("transcript").innerText=""
+document.getElementById("result").innerHTML=""
+document.getElementById("nextBtn").style.display="none"
+
+loadQuestion()
+
+}
+
+//Final submit
+function finalSubmit(){
+
+localStorage.setItem("communicationResults", JSON.stringify(results))
+
+window.location.href="report.html"
+
+}
+
+</script>
+
+</body>
+
+</html>
